@@ -1,12 +1,11 @@
 package com.lxg.root.imageviewer;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.DropBoxManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -18,23 +17,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     /**
     * 保存路径和图片的Map
     * */
@@ -57,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getImages();
         listView=(ListView)findViewById(R.id.listview);
-        listView.setAdapter(new MyAdapter());
+        listView.setAdapter(new MyAdapter1());
 
     }
 
 
-    public class MyAdapter extends BaseAdapter
+    public class MyAdapter1 extends BaseAdapter
     {
         @Override
         public int getCount() {
@@ -81,15 +76,21 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view=getLayoutInflater().inflate(R.layout.list_main,parent);
+
+            //TextView path_parent=new TextView(getApplicationContext());
+            if(convertView==null)
+            {
+            set=mDirPaths.entrySet();
+            convertView=getLayoutInflater().inflate(R.layout.list_main, parent);
             TextView path_parent=(TextView)findViewById(R.id.text_parent);
             String path=getPath(set)[position];
-            String text=path;
-            path_parent.setText(text);
+            path_parent.setText(path);
             mImgs =mDirPaths.get(path);
-            view.setTag(position);
-            view.setOnClickListener(new MyListener());
-            return view;
+            convertView.setTag(position);
+            convertView.setOnClickListener(new MyListener());
+            return convertView;
+            }
+            else return convertView;
         }
     }
 
@@ -186,10 +187,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view)
         {
+
             DATA data=new DATA();
             int position=(int)view.getTag();
             String path=getPath(set)[position];
-            List<String> names=mDirPaths.get(position);
+            List<String> names=mDirPaths.get(path);
             data.setPosition(position);
             data.setNames(names);
             data.setPath(path);
